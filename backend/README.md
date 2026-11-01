@@ -10,7 +10,6 @@
 
 - [Web API版](#web-api版)
 - [CLI版](#cli版)
-- [テスト](#テスト)
 
 ## Web API版
 
@@ -136,12 +135,4 @@ https://accounts.spotify.com/authorize?...
 - 同じPostgreSQLに繋がっている必要があります。
 - Docker ComposeやApple containerでWeb版を動かしている場合は、DBのポートがホストの`127.0.0.1:5432`に公開されているので、
   `backend/.env`の`DATABASE_URL`をその宛先にしてCLIをホストで実行してください。
-
-## テスト
-
-```bash
-pip install -r requirements-dev.txt
-pytest
-```
-
-現状は、Eloレーティング計算(`app/services/battle_service.py`の`update_ratings`)のユニットテストがあります。
+  
