@@ -122,7 +122,7 @@ CLI側のポートを変えたい場合は`.env`の`SPOTIFY_CLI_REDIRECT_URI`を
 ### 2. 環境変数(`backend/.env`)
 
 ```bash
-cp backend/.env.example backend/.env
+cp backend/env_sample backend/.env
 ```
 
 `backend/.env`を開き、次の必須項目を設定します。
