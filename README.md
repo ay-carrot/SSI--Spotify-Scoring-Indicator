@@ -1,5 +1,9 @@
 # Spotify Scoring Indicator (SSI)
 
+このアプリケーションはPython初学者の私ががポートフォリオとして作成したアプリケーションです。
+私の環境(M3 Mac / Apple Container)では問題なく動作しておりますが、他環境での動作の保証は致しかねます。
+フロントエンドの実装については知識不足のためほぼAIによるものです。ご了承ください。
+
 Spotifyの保存済みライブラリを取得し、2曲を比較させることでEloレーティングを算出するアプリケーションです。
 ブラウザで使うWeb版と、ターミナルで完結するCLI版があり、どちらも同じDB・同じコアロジック(`backend/app/services/`)を共有しています。
 
@@ -37,9 +41,9 @@ Spotifyの保存済みライブラリを取得し、2曲を比較させること
       ▼
 [FastAPI (api/)]                      [CLI (cli/)]
       │                                    │
-      └─┬────────┘
-             │  関数呼び出し(同一プロセス内)
-             ▼
+      └─────────────────┬──────────────────┘
+                        │  関数呼び出し(同一プロセス内)
+                        ▼
         [共有コア (app/): services / models / schemas]
               │                       │
               ▼                       ▼
@@ -118,7 +122,7 @@ CLI側のポートを変えたい場合は`.env`の`SPOTIFY_CLI_REDIRECT_URI`を
 ### 2. 環境変数(`backend/.env`)
 
 ```bash
-cp backend/env_sample backend/.env
+cp backend/.env.example backend/.env
 ```
 
 `backend/.env`を開き、次の必須項目を設定します。
