@@ -1,0 +1,28 @@
+# --- Spotify Developer Dashboard で取得 ---
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:8000/auth/callback
+# CLI版ログイン用。Spotify Developer DashboardのRedirect URIに
+# こちらも追加登録しておくこと(Web用とは別ポート)。
+SPOTIFY_CLI_REDIRECT_URI=http://127.0.0.1:8765/callback
+
+# --- DB ---
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/spotify_elo
+
+# --- Auth / Security ---
+# openssl rand -hex 32 などで生成
+JWT_SECRET_KEY=change_me_to_a_random_secret
+JWT_ALGORITHM=HS256
+JWT_EXPIRE_MINUTES=10080
+# Spotifyトークンをdbに保存する際の暗号化キー (Fernet.generate_key() で生成、base64 32byte)
+TOKEN_ENCRYPTION_KEY=change_me_fernet_key
+
+# --- Frontend ---
+# 必ずバックエンドと同じホスト名(127.0.0.1)にすること。Cookieはホスト名単位で
+# 共有され、"127.0.0.1" と "localhost" は別ホスト扱いのため、片方だけ変えると
+# ログイン後の認証が401になります。
+FRONTEND_URL=http://127.0.0.1:5173
+
+# --- Elo ---
+ELO_K_FACTOR=32
+ELO_INITIAL_RATING=1500

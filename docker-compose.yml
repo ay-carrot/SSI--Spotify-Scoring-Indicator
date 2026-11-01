@@ -1,0 +1,82 @@
+# SSI (Spotify Elo) を Docker Compose で起動する定義。
+# scripts/run-apple-container.sh と同等の構成(PostgreSQL / バックエンド / フロントエンド)。
+#
+# 前提:
+#   - Docker Desktop / OrbStack / Colima など、`docker compose` (Compose v2) が使えること
+#   - backend/.env を用意済み (backend/.env.example をコピーして、
+#     SPOTIFY_CLIENT_ID / SPOTIFY_CLIENT_SECRET / JWT_SECRET_KEY / TOKEN_ENCRYPTION_KEY などを設定)
+#   - このファイルはリポジトリのルート(backend/ と frontend/ の親)に置く
+#
+# 使い方:
+#   docker compose up -d --build     # ビルド & 起動
+#   docker compose logs -f backend   # ログ表示 (backend / frontend / db)
+#   docker compose down              # 停止 & 削除 (DBのデータは残る)
+#   docker compose down -v           # 停止 & 削除 + DBのデータも削除
+#
+# アクセス先(Cookie認証のため、必ず "127.0.0.1" で開くこと。"localhost" は不可):
+#   フロントエンド: http://127.0.0.1:5173
+#   バックエンド:   http://127.0.0.1:8000/docs
+#   Spotify Developer Dashboard の Redirect URI: http://127.0.0.1:8000/auth/callback
+#
+# CLI版(cli/)はコンテナ内ではなく、ホスト側で実行すること。
+#   ログイン時にホスト側のブラウザからCLIの一時サーバー(:8765)へコールバックが来るため。
+#   その場合、backend/.env の DATABASE_URL をホストから見たDBのアドレスにしておく:
+#     DATABASE_URL=postgresql+psycopg2://postgres:postgres@127.0.0.1:5432/spotify_elo
+#   (コンテナ内のバックエンドは、下の environment でDATABASE_URLを上書きするので影響しない)
+
+name: spotify-elo
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: spotify_elo
+    ports:
+      # ホストのCLIから接続できるように公開。初期パスワードのままなので 127.0.0.1 限定にしている。
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d spotify_elo"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      # environment は env_file より優先される。コンテナ間はサービス名 "db" で名前解決できる。
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/spotify_elo
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  frontend:
+    build: ./frontend
+    environment:
+      # nginx が /api/* をバックエンドへプロキシする先(サービス名で名前解決)
+      BACKEND_HOST: backend
+      BACKEND_PORT: "8000"
+    ports:
+      - "127.0.0.1:5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  db-data:
