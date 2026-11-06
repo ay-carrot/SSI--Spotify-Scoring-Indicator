@@ -1,10 +1,10 @@
 # Spotify Scoring Indicator (SSI)
 
-このアプリケーションはPython初学者の私ががポートフォリオとして作成したアプリケーションです。
+このアプリケーションはPython初学者の私がポートフォリオとして作成したアプリケーションです。
 私の環境(M3 Mac / Apple Container)では問題なく動作しておりますが、他環境での動作の保証は致しかねます。
 フロントエンドの実装については知識不足のためほぼAIによるものです。ご了承ください。
 
-アプリの利用にあたってはSpotify Premiumプランへの加入、およびSpotify Developersへの登録が必要になります。
+利用にあたってはSpotify Premiumプランへの加入、およびSpotify Developersへの登録が必要になります。
 
 Spotifyの保存済みライブラリを取得し、2曲を比較させることでEloレーティングを算出するアプリケーションです。
 ブラウザで使うWeb版と、ターミナルで完結するCLI版があり、どちらも同じDB・同じコアロジック(`backend/app/services/`)を共有しています。
